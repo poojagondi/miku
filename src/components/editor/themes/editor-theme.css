@@ -1,0 +1,158 @@
+.EditorTheme__code {
+  background-color: transparent;
+  font-family:
+    var(--font-fira-code), "Fira Code", Consolas, Monaco, "Liberation Mono",
+    Menlo, Courier, monospace;
+  display: block;
+  padding: 8px 8px 8px 52px;
+  line-height: 1.53;
+  font-size: 13px;
+  margin: 0;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  overflow-x: auto;
+  border: 1px solid #ccc;
+  position: relative;
+  border-radius: 8px;
+  tab-size: 2;
+}
+.EditorTheme__code:before {
+  content: attr(data-gutter);
+  position: absolute;
+  background-color: transparent;
+  border-right: 1px solid #ccc;
+  left: 0;
+  top: 0;
+  padding: 8px;
+  color: #777;
+  white-space: pre-wrap;
+  text-align: right;
+  min-width: 25px;
+}
+.EditorTheme__table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  overflow-y: scroll;
+  overflow-x: scroll;
+  table-layout: fixed;
+  width: fit-content;
+  width: 100%;
+  margin: 0px 25px 30px 0px;
+}
+.EditorTheme__tokenComment {
+  color: slategray;
+}
+.EditorTheme__tokenPunctuation {
+  color: #999;
+}
+.EditorTheme__tokenProperty {
+  color: #905;
+}
+.EditorTheme__tokenSelector {
+  color: #690;
+}
+.EditorTheme__tokenOperator {
+  color: #9a6e3a;
+}
+.EditorTheme__tokenAttr {
+  color: #07a;
+}
+.EditorTheme__tokenVariable {
+  color: #e90;
+}
+.EditorTheme__tokenFunction {
+  color: #dd4a68;
+}
+
+.Collapsible__container {
+  background-color: var(--background);
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.Collapsible__title {
+  padding: 0.25rem;
+  padding-left: 1rem;
+  position: relative;
+  font-weight: bold;
+  outline: none;
+  cursor: pointer;
+  list-style-type: disclosure-closed;
+  list-style-position: inside;
+}
+
+.Collapsible__title p {
+  display: inline-flex;
+}
+.Collapsible__title::marker {
+  color: lightgray;
+}
+.Collapsible__container[open] > .Collapsible__title {
+  list-style-type: disclosure-open;
+}
+
+/* Default font for editor content - can be overridden by inline styles */
+.ContentEditable__root {
+  font-family:
+    var(--font-fira-code), "Fira Code", Consolas, "Liberation Mono", Menlo,
+    Courier, monospace;
+  font-feature-settings:
+    "liga" 1,
+    "calt" 1;
+}
+
+/* Support for font family selections - these should override the default */
+.ContentEditable__root [style*="font-family: Arial"],
+.ContentEditable__root span[style*="font-family: Arial"],
+.ContentEditable__root p[style*="font-family: Arial"] {
+  font-family: Arial, sans-serif !important;
+}
+
+.ContentEditable__root [style*="font-family: Verdana"],
+.ContentEditable__root span[style*="font-family: Verdana"],
+.ContentEditable__root p[style*="font-family: Verdana"] {
+  font-family: Verdana, sans-serif !important;
+}
+
+.ContentEditable__root [style*="font-family: 'Times New Roman'"],
+.ContentEditable__root [style*="font-family: Times New Roman"],
+.ContentEditable__root span[style*="font-family: 'Times New Roman'"],
+.ContentEditable__root p[style*="font-family: 'Times New Roman'"] {
+  font-family: "Times New Roman", serif !important;
+}
+
+.ContentEditable__root [style*="font-family: Georgia"],
+.ContentEditable__root span[style*="font-family: Georgia"],
+.ContentEditable__root p[style*="font-family: Georgia"] {
+  font-family: Georgia, serif !important;
+}
+
+.ContentEditable__root [style*="font-family: 'Courier New'"],
+.ContentEditable__root [style*="font-family: Courier New"],
+.ContentEditable__root span[style*="font-family: 'Courier New'"],
+.ContentEditable__root p[style*="font-family: 'Courier New'"] {
+  font-family: "Courier New", monospace !important;
+}
+
+.ContentEditable__root [style*="font-family: 'Trebuchet MS'"],
+.ContentEditable__root [style*="font-family: Trebuchet MS"],
+.ContentEditable__root span[style*="font-family: 'Trebuchet MS'"],
+.ContentEditable__root p[style*="font-family: 'Trebuchet MS'"] {
+  font-family: "Trebuchet MS", sans-serif !important;
+}
+
+.ContentEditable__root [style*="font-family: 'Fira Code'"],
+.ContentEditable__root [style*="font-family: Fira Code"],
+.ContentEditable__root span[style*="font-family: 'Fira Code'"],
+.ContentEditable__root p[style*="font-family: 'Fira Code'"] {
+  font-family:
+    var(--font-fira-code), "Fira Code", Consolas, "Liberation Mono", Menlo,
+    Courier, monospace !important;
+}
+
+/* Support for A Pretty Neat Font when selected */
+.ContentEditable__root [style*="font-family: A Pretty Neat Font"],
+.ContentEditable__root [style*="font-family: 'A Pretty Neat Font'"] {
+  font-family: "A Pretty Neat Font", cursive !important;
+}
