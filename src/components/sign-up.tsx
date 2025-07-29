@@ -13,10 +13,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import Image from "next/image";
-import { Loader2, X } from "lucide-react";
+import { X } from "lucide-react";
 import { signUp } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { MikuLoader } from "@/components/ui/miku-loader";
 
 export default function SignUp() {
   const [firstName, setFirstName] = useState("");
@@ -182,20 +183,7 @@ export default function SignUp() {
               });
             }}
           >
-            {loading ? (
-              <div className="flex items-center gap-2">
-                <Image
-                  src="/mikuuu.png"
-                  alt="Miku"
-                  width={16}
-                  height={16}
-                  className="animate-pulse"
-                />
-                <span>...</span>
-              </div>
-            ) : (
-              "Create an account"
-            )}
+            {loading ? <MikuLoader size={20} text="" /> : "Create an account"}
           </Button>
         </div>
       </CardContent>

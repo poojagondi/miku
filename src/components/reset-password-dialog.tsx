@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -15,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth-client";
 import { useState } from "react";
 import { toast } from "sonner";
+import { MikuLoader } from "@/components/ui/miku-loader";
 
 export function ResetDialog() {
   const [email, setEmail] = useState("");
@@ -88,20 +88,7 @@ export function ResetDialog() {
                 }}
                 disabled={loading}
               >
-                {loading ? (
-                  <div className="flex items-center gap-2">
-                    <Image
-                      src="/mikuuu.png"
-                      alt="Miku"
-                      width={16}
-                      height={16}
-                      className="animate-pulse"
-                    />
-                    <span>...</span>
-                  </div>
-                ) : (
-                  "Send Reset Link"
-                )}
+                {loading ? <MikuLoader size={20} text="" /> : "Send Reset Link"}
               </Button>
             </>
           ) : (

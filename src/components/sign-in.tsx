@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,13 +13,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useState } from "react";
-import { Loader2, Key } from "lucide-react";
 import { signIn } from "@/lib/auth-client";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { ResetDialog } from "./reset-password-dialog";
+import { MikuLoader } from "@/components/ui/miku-loader";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
@@ -94,40 +93,14 @@ export default function SignIn() {
                   onSuccess: (ctx) => {
                     setLoading(false);
                     toast.success("Signed in successfully");
-
-                    // Check if this is a first-time login by checking if user has any notes
-                    // For simplicity, we'll redirect new users to welcome page
-                    // You can enhance this logic based on user creation date or other factors
-                    const isNewUser =
-                      ctx.data?.user?.createdAt &&
-                      new Date(ctx.data.user.createdAt).getTime() >
-                        Date.now() - 60000; // Created within last minute
-
-                    if (isNewUser) {
-                      router.push("/welcome");
-                    } else {
-                      router.push("/enter");
-                    }
+                    router.push("/dashboard");
                     return;
                   },
                 }
               );
             }}
           >
-            {loading ? (
-              <div className="flex items-center gap-2">
-                <Image
-                  src="/mikuuu.png"
-                  alt="Miku"
-                  width={16}
-                  height={16}
-                  className="animate-pulse"
-                />
-                <span>...</span>
-              </div>
-            ) : (
-              <p> Login </p>
-            )}
+            {loading ? <MikuLoader size={20} text="" /> : <p> Login </p>}
           </Button>
         </div>
       </CardContent>

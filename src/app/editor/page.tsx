@@ -20,6 +20,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 import { TooltipProvider } from "@/components/ui/tooltip"; // Assuming this path is correct, adjust if needed
+import { MikuLoader } from "@/components/ui/miku-loader";
 
 // Additional imports from the second snippet, adjust paths as necessary
 import { ToolbarPlugin } from "@/components/editor/plugins/toolbar/toolbar-plugin";
@@ -51,6 +52,7 @@ import { $createTextNode as lexicalCreateTextNode } from "lexical";
 import { StickerNode } from "@/components/editor/nodes/sticker-node";
 import { InsertStickerToolbarPlugin } from "@/components/editor/plugins/toolbar/insert-sticker-toolbar-plugin";
 import { ThemeToggleButton } from "@/components/editor/plugins/toolbar/theme-toggle-button";
+import { ShimejiExtensionButton } from "@/components/editor/plugins/toolbar/shimeji-extension-button";
 
 const editorConfig: InitialConfigType = {
   namespace: "Editor",
@@ -268,16 +270,7 @@ function Plugins() {
     <div className="min-h-screen">
       {isLoading && (
         <div className="absolute inset-0 bg-white/50 flex items-center justify-center z-50">
-          <div className="flex items-center gap-2">
-            <Image
-              src="/mikuuu.png"
-              alt="Miku"
-              width={24}
-              height={24}
-              className="animate-pulse"
-            />
-            <span>...</span>
-          </div>
+          <MikuLoader size={48} text="Loading editor..." />
         </div>
       )}
 
@@ -311,6 +304,7 @@ function Plugins() {
                 {/* <InsertInlineImage /> */}
                 <AIChatPlugin />
                 <InsertStickerToolbarPlugin />
+                <ShimejiExtensionButton />
                 <TypingSoundsPlugin />
                 <AlarmToolbarPlugin />
                 <ThemeToggleButton />
@@ -355,16 +349,7 @@ function Plugins() {
               disabled={isSaving}
             >
               {isSaving ? (
-                <>
-                  <Image
-                    src="/mikuuu.png"
-                    alt="Miku Notes Icon"
-                    width={16}
-                    height={16}
-                    className="rounded animate-pulse mr-2"
-                  />
-                  ...
-                </>
+                <MikuLoader size={16} text="" />
               ) : currentNoteId ? (
                 "Update Note"
               ) : (

@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { MikuLoader } from "@/components/ui/miku-loader";
 
 export default function HomePage() {
   const { isPending } = useSession();
@@ -25,16 +26,7 @@ export default function HomePage() {
         <div className="relative z-20">
           <Navbar />
           <div className="flex items-center justify-center min-h-[calc(100vh-80px)]">
-            <div className="text-center flex items-center gap-2">
-              <Image
-                src="/mikuuu.png"
-                alt="Miku Notes Icon"
-                width={32}
-                height={32}
-                className="rounded animate-pulse"
-              />
-              <div className="text-xl">...</div>
-            </div>
+            <MikuLoader size={48} text="Loading..." />
           </div>
         </div>
       </div>

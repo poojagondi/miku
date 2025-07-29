@@ -9,7 +9,6 @@ import { user } from "./auth-schema";
 // PostgreSQL schema (for production with Neon)
 export const notes = pgTable("notes", {
   id: serial("id").primaryKey(),
-  title: pgText("title").notNull(),
   content: pgText("content").notNull(),
   editorState: pgText("editor_state"), // JSON string of the lexical editor state
   createdBy: pgText("created_by")

@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { MikuLoader } from "@/components/ui/miku-loader";
 
 interface StickerOption {
   src: string;
@@ -84,16 +84,7 @@ export function StickerPicker({
       >
         {isLoading ? (
           <div className="flex items-center justify-center p-4">
-            <div className="flex items-center gap-2">
-              <Image
-                src="/mikuuu.png"
-                alt="Miku"
-                width={24}
-                height={24}
-                className="animate-pulse"
-              />
-              <span className="text-sm text-muted-foreground">...</span>
-            </div>
+            <MikuLoader size={32} text="Loading stickers..." />
           </div>
         ) : error ? (
           <div className="text-center p-4">

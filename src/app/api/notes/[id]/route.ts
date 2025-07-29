@@ -127,7 +127,7 @@ export async function PUT(
 
   try {
     const id = parseInt(idString);
-    const { title, content, editorState } = await request.json();
+    const { content, editorState } = await request.json();
 
     if (isNaN(id)) {
       return NextResponse.json(
@@ -154,7 +154,6 @@ export async function PUT(
     }
 
     const updatedNote = await updateNote(id, {
-      title: title || "Untitled",
       content,
       editorState,
     });

@@ -13,9 +13,8 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const { content, title, editorState } = await request.json();
+    const { content, editorState } = await request.json();
     const note = await createNote({
-      title: title || "Untitled",
       content,
       editorState,
       createdBy: session.user.id,

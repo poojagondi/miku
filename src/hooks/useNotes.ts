@@ -33,7 +33,7 @@ export function useNotes() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ title, content }),
+        body: JSON.stringify({ content }),
       });
 
       if (response.ok) {
@@ -58,7 +58,7 @@ export function useNotes() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ title, content }),
+        body: JSON.stringify({ content }),
       });
 
       if (response.ok) {

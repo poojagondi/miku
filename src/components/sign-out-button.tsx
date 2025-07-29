@@ -3,9 +3,9 @@
 import { Button } from "@/components/ui/button";
 import { signOut } from "@/lib/auth-client";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { MikuLoader } from "@/components/ui/miku-loader";
 
 export default function SignOutButton() {
   const router = useRouter();
@@ -26,7 +26,7 @@ export default function SignOutButton() {
   return (
     <Button variant="outline" className="w-min" onClick={handleSignOut}>
       {loading ? (
-        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+        <MikuLoader size={16} text="" />
       ) : (
         <span className="hidden sm:inline">Sign Out</span>
       )}
