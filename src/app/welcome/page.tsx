@@ -76,7 +76,7 @@ export default function WelcomePage() {
               Welcome, {session.user.name || session.user.email}! 🎉
             </h1>
             <p className="text-xl text-white/90 mb-6">
-              You're all set to start your creative journey with Miku Notes!
+              You&apos;re all set to start your creative journey with Miku Notes!
             </p>
           </div>
 

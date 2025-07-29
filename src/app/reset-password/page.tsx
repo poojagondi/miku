@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 
 function ResetPage() {
   const [password, setPassword] = useState("");
@@ -132,4 +132,10 @@ function ResetPage() {
   );
 }
 
-export default ResetPage;
+export default function ResetPageWrapper() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ResetPage />
+    </Suspense>
+  );
+}

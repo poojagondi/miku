@@ -175,7 +175,7 @@ export function StickerPicker({
             {filteredStickers.length === 0 && searchTerm && (
               <div className="text-center py-4">
                 <p className="text-sm text-muted-foreground">
-                  No stickers match "{searchTerm}"
+                  No stickers match &quot;{searchTerm}&quot;
                 </p>
               </div>
             )}

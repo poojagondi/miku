@@ -229,6 +229,6 @@ export function $createStickerNode({
   return new StickerNode({ src, altText, width, height }, key);
 }
 
-export function $isStickerNode(node: any): node is StickerNode {
+export function $isStickerNode(node: unknown): node is StickerNode {
   return node instanceof StickerNode;
 }

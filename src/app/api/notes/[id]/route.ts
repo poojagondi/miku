@@ -4,8 +4,9 @@ import { auth } from "@/lib/auth";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id: idString } = await params;
   const session = await auth.api.getSession(request);
 
   if (!session) {
@@ -16,7 +17,7 @@ export async function GET(
   }
 
   try {
-    const id = parseInt(params.id);
+    const id = parseInt(idString);
 
     if (isNaN(id)) {
       return NextResponse.json(
@@ -57,8 +58,9 @@ export async function GET(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id: idString } = await params;
   const session = await auth.api.getSession(request);
 
   if (!session) {
@@ -69,7 +71,7 @@ export async function DELETE(
   }
 
   try {
-    const id = parseInt(params.id);
+    const id = parseInt(idString);
 
     if (isNaN(id)) {
       return NextResponse.json(
@@ -111,8 +113,9 @@ export async function DELETE(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id: idString } = await params;
   const session = await auth.api.getSession(request);
 
   if (!session) {
@@ -123,7 +126,7 @@ export async function PUT(
   }
 
   try {
-    const id = parseInt(params.id);
+    const id = parseInt(idString);
     const { title, content, editorState } = await request.json();
 
     if (isNaN(id)) {

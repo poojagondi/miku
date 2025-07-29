@@ -21,12 +21,12 @@ import {
   LexicalCommand,
   LexicalEditor,
 } from "lexical";
-import {
-  $createInlineImageNode,
-  $isInlineImageNode,
-  InlineImageNode,
-  InlineImagePayload,
-} from "../nodes/inline-image-node";
+// import {
+//   $createInlineImageNode,
+//   $isInlineImageNode,
+//   InlineImageNode,
+//   InlineImagePayload,
+// } from "../nodes/inline-image-node";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import {
@@ -39,7 +39,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 
-export type InsertInlineImagePayload = Readonly<InlineImagePayload>;
+export type InsertInlineImagePayload = Record<string, unknown>; // Readonly<InlineImagePayload>;
 
 const CAN_USE_DOM =
   typeof window !== "undefined" && typeof window.document !== "undefined";
@@ -47,7 +47,7 @@ const CAN_USE_DOM =
 const getDOMSelection = (targetWindow: Window | null): Selection | null =>
   CAN_USE_DOM ? (targetWindow || window).getSelection() : null;
 
-export const INSERT_INLINE_IMAGE_COMMAND: LexicalCommand<InlineImagePayload> =
+export const INSERT_INLINE_IMAGE_COMMAND: LexicalCommand<InsertInlineImagePayload> =
   createCommand("INSERT_INLINE_IMAGE_COMMAND");
 
 export function InsertInlineImageDialog({
@@ -163,131 +163,93 @@ export function InsertInlineImageDialog({
 }
 
 export function InlineImagePlugin(): JSX.Element | null {
-  const [editor] = useLexicalComposerContext();
-
-  useEffect(() => {
-    if (!editor.hasNodes([InlineImageNode])) {
-      throw new Error("ImagesPlugin: ImageNode not registered on editor");
-    }
-
-    return mergeRegister(
-      editor.registerCommand<InsertInlineImagePayload>(
-        INSERT_INLINE_IMAGE_COMMAND,
-        (payload) => {
-          const imageNode = $createInlineImageNode(payload);
-          $insertNodes([imageNode]);
-          if ($isRootOrShadowRoot(imageNode.getParentOrThrow())) {
-            $wrapNodeInElement(imageNode, $createParagraphNode).selectEnd();
-          }
-
-          return true;
-        },
-        COMMAND_PRIORITY_EDITOR
-      ),
-      editor.registerCommand<DragEvent>(
-        DRAGSTART_COMMAND,
-        (event) => {
-          return $onDragStart(event);
-        },
-        COMMAND_PRIORITY_HIGH
-      ),
-      editor.registerCommand<DragEvent>(
-        DRAGOVER_COMMAND,
-        (event) => {
-          return $onDragover(event);
-        },
-        COMMAND_PRIORITY_LOW
-      ),
-      editor.registerCommand<DragEvent>(
-        DROP_COMMAND,
-        (event) => {
-          return $onDrop(event, editor);
-        },
-        COMMAND_PRIORITY_HIGH
-      )
-    );
-  }, [editor]);
-
+  // TODO: Re-enable when InlineImageNode is properly implemented
   return null;
 }
 
-function $onDragStart(event: DragEvent): boolean {
-  const node = $getImageNodeInSelection();
-  if (!node) {
-    return false;
-  }
-  const dataTransfer = event.dataTransfer;
-  if (!dataTransfer) {
-    return false;
-  }
-  const TRANSPARENT_IMAGE =
-    "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
-  const img = document.createElement("img");
-  img.src = TRANSPARENT_IMAGE;
-  dataTransfer.setData("text/plain", "_");
-  dataTransfer.setDragImage(img, 0, 0);
-  dataTransfer.setData(
-    "application/x-lexical-drag",
-    JSON.stringify({
-      data: {
-        altText: node.__altText,
-        caption: node.__caption,
-        height: node.__height,
-        key: node.getKey(),
-        showCaption: node.__showCaption,
-        src: node.__src,
-        width: node.__width,
-      },
-      type: "image",
-    })
-  );
+// TODO: Re-enable when InlineImageNode is properly implemented
+// function $onDragStart(event: DragEvent): boolean {
+//   const node = $getImageNodeInSelection();
+//   if (!node) {
+//     return false;
+//   }
+//   const dataTransfer = event.dataTransfer;
+//   if (!dataTransfer) {
+//     return false;
+//   }
+//   const TRANSPARENT_IMAGE =
+//     "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+//   const img = document.createElement("img");
+//   img.src = TRANSPARENT_IMAGE;
+//   dataTransfer.setData("text/plain", "_");
+//   dataTransfer.setDragImage(img, 0, 0);
+//   dataTransfer.setData(
+//     "application/x-lexical-drag",
+//     JSON.stringify({
+//       data: {
+//         altText: node.__altText,
+//         caption: node.__caption,
+//         height: node.__height,
+//         key: node.getKey(),
+//         showCaption: node.__showCaption,
+//         src: node.__src,
+//         width: node.__width,
+//       },
+//       type: "image",
+//     })
+//   );
+// 
+//   return true;
+// }
 
-  return true;
-}
+// TODO: Re-enable when InlineImageNode is properly implemented
+// function $onDragover(event: DragEvent): boolean {
+//   const node = $getImageNodeInSelection();
+//   if (!node) {
+//     return false;
+//   }
+//   if (!canDropImage(event)) {
+//     event.preventDefault();
+//   }
+//   return true;
+// }
 
-function $onDragover(event: DragEvent): boolean {
-  const node = $getImageNodeInSelection();
-  if (!node) {
-    return false;
-  }
-  if (!canDropImage(event)) {
-    event.preventDefault();
-  }
-  return true;
-}
+// TODO: Re-enable when InlineImageNode is properly implemented
+// function $onDrop(event: DragEvent, editor: LexicalEditor): boolean {
+//   const node = $getImageNodeInSelection();
+//   if (!node) {
+//     return false;
+//   }
+//   const data = getDragImageData(event);
+//   if (!data) {
+//     return false;
+//   }
+//   event.preventDefault();
+//   if (canDropImage(event)) {
+//     const range = getDragSelection(event);
+//     node.remove();
+//     const rangeSelection = $createRangeSelection();
+//     if (range !== null && range !== undefined) {
+//       rangeSelection.applyDOMRange(range);
+//     }
+//     $setSelection(rangeSelection);
+//     editor.dispatchCommand(INSERT_INLINE_IMAGE_COMMAND, data);
+//   }
+//   return true;
+// }
 
-function $onDrop(event: DragEvent, editor: LexicalEditor): boolean {
-  const node = $getImageNodeInSelection();
-  if (!node) {
-    return false;
-  }
-  const data = getDragImageData(event);
-  if (!data) {
-    return false;
-  }
-  event.preventDefault();
-  if (canDropImage(event)) {
-    const range = getDragSelection(event);
-    node.remove();
-    const rangeSelection = $createRangeSelection();
-    if (range !== null && range !== undefined) {
-      rangeSelection.applyDOMRange(range);
-    }
-    $setSelection(rangeSelection);
-    editor.dispatchCommand(INSERT_INLINE_IMAGE_COMMAND, data);
-  }
-  return true;
-}
-
-function $getImageNodeInSelection(): InlineImageNode | null {
-  const selection = $getSelection();
-  if (!$isNodeSelection(selection)) {
-    return null;
-  }
-  const nodes = selection.getNodes();
-  const node = nodes[0];
-  return $isInlineImageNode(node) ? node : null;
-}
+// function $getImageNodeInSelection(): InlineImageNode | null {
+//   const selection = $getSelection();
+//   if (!$isRangeSelection(selection)) {
+//     return null;
+//   }
+//   const node = getSelectedNode(selection);
+//   if ($isInlineImageNode(node)) {
+//     return node;
+//   }
+//   const parent = node.getParent();
+//   return $isInlineImageNode(node) ? node : null;
+// }
 
 function getDragImageData(event: DragEvent): null | InsertInlineImagePayload {
   const dragData = event.dataTransfer?.getData("application/x-lexical-drag");

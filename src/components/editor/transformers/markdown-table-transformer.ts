@@ -22,22 +22,22 @@ import {
 } from "@lexical/table"
 import { $isParagraphNode, $isTextNode, LexicalNode } from "lexical"
 
-import { EMOJI } from "/editor/transformers/markdown-emoji-transformer"
-import { EQUATION } from "/editor/transformers/markdown-equation-transformer"
-import { HR } from "/editor/transformers/markdown-hr-transformer"
-import { IMAGE } from "/editor/transformers/markdown-image-transformer"
-import { TWEET } from "/editor/transformers/markdown-tweet-transformer"
+// import { EMOJI } from "@/components/editor/transformers/markdown-emoji-transformer"
+// import { EQUATION } from "@/components/editor/transformers/markdown-equation-transformer"
+// import { HR } from "@/components/editor/transformers/markdown-hr-transformer"
+// import { IMAGE } from "@/components/editor/transformers/markdown-image-transformer"
+// import { TWEET } from "@/components/editor/transformers/markdown-tweet-transformer"
 
 // Very primitive table setup
 const TABLE_ROW_REG_EXP = /^(?:\|)(.+)(?:\|)\s?$/
 const TABLE_ROW_DIVIDER_REG_EXP = /^(\| ?:?-*:? ?)+\|\s?$/
 
 const OTHER_MARKDOWN_TRANSFORMERS = [
-  HR,
-  IMAGE,
-  EMOJI,
-  EQUATION,
-  TWEET,
+  // HR,
+  // IMAGE,
+  // EMOJI,
+  // EQUATION,
+  // TWEET,
   CHECK_LIST,
   ...ELEMENT_TRANSFORMERS,
   ...MULTILINE_ELEMENT_TRANSFORMERS,

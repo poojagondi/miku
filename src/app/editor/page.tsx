@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
   InitialConfigType,
@@ -78,7 +78,9 @@ export default function RichTextEditorDemo() {
         }}
       >
         <TooltipProvider>
-          <Plugins />
+          <Suspense fallback={<div>Loading editor...</div>}>
+            <Plugins />
+          </Suspense>
         </TooltipProvider>
       </LexicalComposer>
     </div>
@@ -87,7 +89,7 @@ export default function RichTextEditorDemo() {
 
 const placeholder = "Start writing...";
 
-export function Plugins() {
+function Plugins() {
   const [floatingAnchorElem, setFloatingAnchorElem] =
     useState<HTMLDivElement | null>(null);
   const [editor] = useLexicalComposerContext();

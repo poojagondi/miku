@@ -50,7 +50,7 @@ export default async function Dashboard() {
         {notes.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-muted-foreground mb-4">
-              You haven't created any notes yet.
+              You haven&apos;t created any notes yet.
             </p>
             <Link href="/editor">
               <Button>Create Your First Note</Button>
