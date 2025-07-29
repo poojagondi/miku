@@ -1,6 +1,6 @@
-import { useState } from "react"
-import { $isLinkNode } from "@lexical/link"
-import { $findMatchingParent } from "@lexical/utils"
+import { useState } from "react";
+import { $isLinkNode } from "@lexical/link";
+import { $findMatchingParent } from "@lexical/utils";
 import {
   $isElementNode,
   $isRangeSelection,
@@ -9,7 +9,7 @@ import {
   FORMAT_ELEMENT_COMMAND,
   INDENT_CONTENT_COMMAND,
   OUTDENT_CONTENT_COMMAND,
-} from "lexical"
+} from "lexical";
 import {
   AlignCenterIcon,
   AlignJustifyIcon,
@@ -17,23 +17,20 @@ import {
   AlignRightIcon,
   IndentDecreaseIcon,
   IndentIncreaseIcon,
-} from "lucide-react"
+} from "lucide-react";
 
-import { useToolbarContext } from "@/components/editor/context/toolbar-context"
-import { useUpdateToolbarHandler } from "@/components/editor/editor-hooks/use-update-toolbar"
-import { getSelectedNode } from "@/components/editor/utils/get-selected-node"
-import { Separator } from "@/components/ui/separator"
-import {
-  ToggleGroup,
-  ToggleGroupItem,
-} from "@/components/ui/toggle-group"
+import { useToolbarContext } from "@/components/editor/context/toolbar-context";
+import { useUpdateToolbarHandler } from "@/components/editor/editor-hooks/use-update-toolbar";
+import { getSelectedNode } from "@/components/editor/utils/get-selected-node";
+import { Separator } from "@/components/ui/separator";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 const ELEMENT_FORMAT_OPTIONS: {
   [key in Exclude<ElementFormatType, "start" | "end" | "">]: {
-    icon: React.ReactNode
-    iconRTL: string
-    name: string
-  }
+    icon: React.ReactNode;
+    iconRTL: string;
+    name: string;
+  };
 } = {
   left: {
     icon: <AlignLeftIcon className="size-4" />,
@@ -55,24 +52,24 @@ const ELEMENT_FORMAT_OPTIONS: {
     iconRTL: "justify-align",
     name: "Justify Align",
   },
-} as const
+} as const;
 
 export function ElementFormatToolbarPlugin() {
-  const { activeEditor } = useToolbarContext()
-  const [elementFormat, setElementFormat] = useState<ElementFormatType>("left")
+  const { activeEditor } = useToolbarContext();
+  const [elementFormat, setElementFormat] = useState<ElementFormatType>("left");
 
   const $updateToolbar = (selection: BaseSelection) => {
     if ($isRangeSelection(selection)) {
-      const node = getSelectedNode(selection)
-      const parent = node.getParent()
+      const node = getSelectedNode(selection);
+      const parent = node.getParent();
 
-      let matchingParent
+      let matchingParent;
       if ($isLinkNode(parent)) {
         // If node is a link, we need to fetch the parent paragraph node to set format
         matchingParent = $findMatchingParent(
           node,
           (parentNode) => $isElementNode(parentNode) && !parentNode.isInline()
-        )
+        );
       }
       setElementFormat(
         $isElementNode(matchingParent)
@@ -80,28 +77,28 @@ export function ElementFormatToolbarPlugin() {
           : $isElementNode(node)
             ? node.getFormatType()
             : parent?.getFormatType() || "left"
-      )
+      );
     }
-  }
+  };
 
-  useUpdateToolbarHandler($updateToolbar)
+  useUpdateToolbarHandler($updateToolbar);
 
   const handleValueChange = (value: string) => {
-    if (!value) return // Prevent unselecting current value
+    if (!value) return; // Prevent unselecting current value
 
-    setElementFormat(value as ElementFormatType)
+    setElementFormat(value as ElementFormatType);
 
     if (value === "indent") {
-      activeEditor.dispatchCommand(INDENT_CONTENT_COMMAND, undefined)
+      activeEditor.dispatchCommand(INDENT_CONTENT_COMMAND, undefined);
     } else if (value === "outdent") {
-      activeEditor.dispatchCommand(OUTDENT_CONTENT_COMMAND, undefined)
+      activeEditor.dispatchCommand(OUTDENT_CONTENT_COMMAND, undefined);
     } else {
       activeEditor.dispatchCommand(
         FORMAT_ELEMENT_COMMAND,
         value as ElementFormatType
-      )
+      );
     }
-  }
+  };
 
   return (
     <>
@@ -151,5 +148,5 @@ export function ElementFormatToolbarPlugin() {
         </ToggleGroupItem>
       </ToggleGroup>
     </>
-  )
+  );
 }

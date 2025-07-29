@@ -25,7 +25,9 @@ export function NotesEditor() {
     }
   };
 
-  const handleEdit = (note: { title: string; content: string; id: number } | null | undefined) => {
+  const handleEdit = (
+    note: { title: string; content: string; id: number } | null | undefined
+  ) => {
     if (note) {
       setTitle(note.title);
       setContent(note.content);

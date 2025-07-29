@@ -198,7 +198,7 @@ export function InlineImagePlugin(): JSX.Element | null {
 //       type: "image",
 //     })
 //   );
-// 
+//
 //   return true;
 // }
 
