@@ -16,7 +16,7 @@ export const auth = betterAuth({
       // Send verification email to user
       await resend.emails.send({
         from: "onboarding@resend.dev",
-        to: "poojagondi25@gmail.com",
+        to: user.email,
         subject: "Verify your Email",
         html: `<p>Please click the link to verify your email:</p><p><a href="${url}">Verify Email</a></p>`,
       });
