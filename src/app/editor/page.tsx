@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
   InitialConfigType,
@@ -15,14 +15,11 @@ import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { ParagraphNode, TextNode } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $getRoot, $getSelection } from "lexical";
+import { $getRoot } from "lexical";
 import Link from "next/link";
-import Image from "next/image";
 
-import { TooltipProvider } from "@/components/ui/tooltip"; // Assuming this path is correct, adjust if needed
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { MikuLoader } from "@/components/ui/miku-loader";
-
-// Additional imports from the second snippet, adjust paths as necessary
 import { ToolbarPlugin } from "@/components/editor/plugins/toolbar/toolbar-plugin";
 import { BlockFormatDropDown } from "@/components/editor/plugins/toolbar/block-format-toolbar-plugin";
 import { FormatParagraph } from "@/components/editor/plugins/toolbar/block-format/format-paragraph";
@@ -36,23 +33,17 @@ import { FontBackgroundToolbarPlugin } from "@/components/editor/plugins/toolbar
 import { FontFamilyToolbarPlugin } from "@/components/editor/plugins/toolbar/font-family-toolbar-plugin";
 import { ClearFormattingToolbarPlugin } from "@/components/editor/plugins/toolbar/clear-formatting-toolbar-plugin";
 import { FontFormatToolbarPlugin } from "@/components/editor/plugins/toolbar/font-format-toolbar-plugin";
-import { FontSizeToolbarPlugin } from "@/components/editor/plugins/toolbar/font-size-toolbar-plugin";
-import { HistoryToolbarPlugin } from "@/components/editor/plugins/toolbar/history-toolbar-plugin";
-import { LinkToolbarPlugin } from "@/components/editor/plugins/toolbar/link-toolbar-plugin";
-import { AlarmToolbarPlugin } from "@/components/editor/plugins/toolbar/alarm-toolbar-plugin";
-import { TypingSoundsPlugin } from "@/components/editor/plugins/toolbar/typing-sounds-plugin";
 import { AIChatPlugin } from "@/components/editor/plugins/toolbar/ai-chat-plugin";
 import { editorTheme } from "@/components/editor/themes/editor-theme";
 import { ContentEditable } from "@/components/editor/editor-ui/content-editable";
 import { DraggableBlockPlugin } from "@/components/editor/plugins/draggable-block-plugin";
-import { InsertInlineImage } from "@/components/editor/plugins/toolbar/block-insert/insert-inline-image";
+import { InsertStickerToolbarPlugin } from "@/components/editor/plugins/toolbar/insert-sticker-toolbar-plugin";
+import { ThemeToggleButton } from "@/components/editor/plugins/toolbar/theme-toggle-button";
+import { ShimejiExtensionButton } from "@/components/editor/plugins/toolbar/shimeji-extension-button";
 import { Button } from "@/components/ui/button";
 import { $createParagraphNode as lexicalCreateParagraphNode } from "lexical";
 import { $createTextNode as lexicalCreateTextNode } from "lexical";
 import { StickerNode } from "@/components/editor/nodes/sticker-node";
-import { InsertStickerToolbarPlugin } from "@/components/editor/plugins/toolbar/insert-sticker-toolbar-plugin";
-import { ThemeToggleButton } from "@/components/editor/plugins/toolbar/theme-toggle-button";
-import { ShimejiExtensionButton } from "@/components/editor/plugins/toolbar/shimeji-extension-button";
 
 const editorConfig: InitialConfigType = {
   namespace: "Editor",
@@ -73,12 +64,8 @@ const editorConfig: InitialConfigType = {
 
 export default function RichTextEditorDemo() {
   return (
-    <div className="min-h-screen bg-background">
-      <LexicalComposer
-        initialConfig={{
-          ...editorConfig,
-        }}
-      >
+    <div className="min-h-[100svh] bg-background">
+      <LexicalComposer initialConfig={{ ...editorConfig }}>
         <TooltipProvider>
           <Suspense fallback={<div>Loading editor...</div>}>
             <Plugins />
@@ -102,56 +89,60 @@ function Plugins() {
   const router = useRouter();
 
   // Load existing note if id parameter is present
+  const loadNoteForEditing = useCallback(
+    async (noteId: number) => {
+      setIsLoading(true);
+      try {
+        const response = await fetch(`/api/notes/${noteId}`);
+        const result = await response.json();
+
+        if (result.success) {
+          setCurrentNoteId(noteId);
+
+          // Try to restore from saved editor state JSON first
+          if (result.data.editorState) {
+            try {
+              const editorState = editor.parseEditorState(
+                result.data.editorState
+              );
+              editor.setEditorState(editorState);
+              return;
+            } catch (error) {
+              console.warn(
+                "Failed to parse editor state, falling back to text content:",
+                error
+              );
+            }
+          }
+
+          // Fallback to text content if no editor state or parsing failed
+          if (result.data.content) {
+            editor.update(() => {
+              const root = $getRoot();
+              root.clear();
+              const textNode = $createTextNode(result.data.content);
+              const paragraphNode = $createParagraphNode();
+              paragraphNode.append(textNode);
+              root.append(paragraphNode);
+            });
+          }
+        }
+      } catch (error) {
+        console.error("Failed to load note for editing:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [editor]
+  );
+
+  // Load existing note if id parameter is present
   useEffect(() => {
     const noteId = searchParams.get("id");
     if (noteId) {
       loadNoteForEditing(Number(noteId));
     }
-  }, [searchParams]);
-
-  const loadNoteForEditing = async (noteId: number) => {
-    setIsLoading(true);
-    try {
-      const response = await fetch(`/api/notes/${noteId}`);
-      const result = await response.json();
-
-      if (result.success) {
-        setCurrentNoteId(noteId);
-
-        // Try to restore from saved editor state JSON first
-        if (result.data.editorState) {
-          try {
-            const editorState = editor.parseEditorState(
-              result.data.editorState
-            );
-            editor.setEditorState(editorState);
-            return;
-          } catch (error) {
-            console.warn(
-              "Failed to parse editor state, falling back to text content:",
-              error
-            );
-          }
-        }
-
-        // Fallback to text content if no editor state or parsing failed
-        if (result.data.content) {
-          editor.update(() => {
-            const root = $getRoot();
-            root.clear();
-            const textNode = $createTextNode(result.data.content);
-            const paragraphNode = $createParagraphNode();
-            paragraphNode.append(textNode);
-            root.append(paragraphNode);
-          });
-        }
-      }
-    } catch (error) {
-      console.error("Failed to load note for editing:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  }, [searchParams, loadNoteForEditing]);
 
   const onRef = (_floatingAnchorElem: HTMLDivElement) => {
     if (_floatingAnchorElem !== null) {
@@ -192,9 +183,7 @@ function Plugins() {
     try {
       const response = await fetch(`/api/notes/${noteId}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           content: textContent,
           editorState: editorStateJson,
@@ -204,7 +193,6 @@ function Plugins() {
       if (response.ok) {
         console.log("Note updated successfully");
         alert("Note updated successfully!");
-        // Redirect to dashboard after successful update
         router.push("/dashboard");
       } else {
         console.error("Failed to update note");
@@ -225,11 +213,9 @@ function Plugins() {
     try {
       const response = await fetch("/api/notes", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          title: "Note from Editor", // Add a default title
+          title: "Note from Editor",
           content: textContent,
           editorState: editorStateJson,
         }),
@@ -238,7 +224,6 @@ function Plugins() {
       if (response.ok) {
         console.log("Note saved successfully");
         alert("Note saved successfully!");
-        // Redirect to dashboard after successful save
         router.push("/dashboard");
       } else {
         console.error("Failed to save note");
@@ -253,21 +238,19 @@ function Plugins() {
   };
 
   const handleNewNote = () => {
-    // Clear the editor and reset state
     setCurrentNoteId(null);
     editor.update(() => {
       const root = $getRoot();
       root.clear();
     });
 
-    // Update URL to remove id parameter
     const url = new URL(window.location.href);
     url.searchParams.delete("id");
     window.history.replaceState({}, "", url.pathname);
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-[100svh]">
       {isLoading && (
         <div className="absolute inset-0 bg-white/50 flex items-center justify-center z-50">
           <MikuLoader size={48} text="Loading editor..." />
@@ -276,7 +259,7 @@ function Plugins() {
 
       {/* toolbar plugins */}
       <ToolbarPlugin>
-        {({ blockType }) => (
+        {() => (
           <div className="sticky top-0 z-10 bg-background border-b shadow-sm">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3">
               <div className="flex gap-2 items-center justify-center">
@@ -297,16 +280,9 @@ function Plugins() {
                 <FontFormatToolbarPlugin format="italic" />
                 <FontFormatToolbarPlugin format="underline" />
                 <FontFormatToolbarPlugin format="strikethrough" />
-                {/* <FontSizeToolbarPlugin /> */}
-                {/* <HistoryToolbarPlugin /> */}
-                {/* <LinkToolbarPlugin />
-                 */}
-                {/* <InsertInlineImage /> */}
                 <AIChatPlugin />
                 <InsertStickerToolbarPlugin />
                 <ShimejiExtensionButton />
-                <TypingSoundsPlugin />
-                <AlarmToolbarPlugin />
                 <ThemeToggleButton />
               </div>
             </div>
@@ -321,7 +297,7 @@ function Plugins() {
               <div className="" ref={onRef}>
                 <ContentEditable
                   placeholder={placeholder}
-                  className="ContentEditable__root relative block min-h-[calc(100vh-300px)] overflow-auto py-8 focus:outline-none text-base leading-relaxed"
+                  className="ContentEditable__root relative block min-h-[calc(100svh-300px)] overflow-auto py-8 focus:outline-none text-base leading-relaxed"
                   placeholderClassName="text-muted-foreground pointer-events-none absolute top-8 left-8 overflow-hidden text-ellipsis select-none text-base"
                 />
               </div>
@@ -329,17 +305,10 @@ function Plugins() {
           }
           ErrorBoundary={LexicalErrorBoundary}
         />
-        {/* Plugins and actions below remain unchanged */}
         <DraggableBlockPlugin anchorElem={floatingAnchorElem} />
         <ListPlugin />
         <CheckListPlugin />
-        {/* rest of the plugins */}
-        <DraggableBlockPlugin anchorElem={floatingAnchorElem} />
-        <ListPlugin />
-        <CheckListPlugin />
-        {/* rest of the plugins */}
 
-        {/* Action buttons at the bottom */}
         <div className="sticky bottom-0 bg-background border-t mt-8 pt-4 pb-4">
           <div className="flex gap-3 justify-center items-center">
             <Button

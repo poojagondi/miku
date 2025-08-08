@@ -23,7 +23,7 @@ export default function EnterPage() {
 
   return (
     <div
-      className={`relative min-h-screen flex items-center justify-center bg-black transition-opacity duration-900 ${fade ? "opacity-0" : "opacity-100"}`}
+      className={`relative min-h-[100svh] flex items-center justify-center bg-black transition-opacity duration-900 ${fade ? "opacity-0" : "opacity-100"}`}
     >
       <video
         ref={videoRef}
@@ -34,7 +34,7 @@ export default function EnterPage() {
         muted
         playsInline
       />
-      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen">
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-[100svh] px-4">
         <button
           onClick={handleEnter}
           className="px-12 py-4 text-3xl font-bold bg-gradient-to-r from-pink-500 to-blue-500 text-white rounded-full shadow-2xl hover:from-pink-600 hover:to-blue-600 transform hover:scale-105 transition-all duration-300"

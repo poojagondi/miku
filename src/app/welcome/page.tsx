@@ -7,7 +7,6 @@ import { useSession } from "@/lib/auth-client";
 
 export default function WelcomePage() {
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [showEntrance, setShowEntrance] = useState(true);
   const router = useRouter();
   const { data: session } = useSession();
 
@@ -48,7 +47,7 @@ export default function WelcomePage() {
 
   if (!session?.user) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-[100svh] flex items-center justify-center">
         <div className="text-center">
           <div className="text-xl">Redirecting to sign in...</div>
         </div>
@@ -57,7 +56,7 @@ export default function WelcomePage() {
   }
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
+    <div className="relative min-h-[100svh] bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
       {/* Animated Background */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -inset-10 opacity-20">
@@ -68,7 +67,7 @@ export default function WelcomePage() {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 flex items-center justify-center min-h-screen px-4">
+      <div className="relative z-10 flex items-center justify-center min-h-[100svh] px-4">
         <div className="text-center max-w-2xl mx-auto">
           {/* Welcome Message */}
           <div className="mb-8">

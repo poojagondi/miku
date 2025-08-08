@@ -19,7 +19,7 @@ function ResetPage() {
 
   if (!token) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="flex min-h-[100svh] items-center justify-center px-4">
         <div className="w-full max-w-md rounded-lg border p-8 shadow-lg">
           <h1 className="mb-6 text-center text-2xl font-bold text-destructive">
             Invalid Token
@@ -34,14 +34,14 @@ function ResetPage() {
 
   if (success) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="flex min-h-[100svh] items-center justify-center px-4">
         <div className="w-full max-w-md rounded-lg border p-8 shadow-lg">
           <span className="mb-6 block text-center text-xl font-semibold text-green-700">
             Password set successfully
           </span>
           <Button
             className="w-full"
-            onClick={(e) => {
+            onClick={() => {
               router.push("/sign-in");
             }}
           >
@@ -53,7 +53,7 @@ function ResetPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
+    <div className="flex min-h-[100svh] items-center justify-center px-4">
       <div className="w-full max-w-md rounded-lg border p-8 shadow-lg">
         <h1 className="mb-6 text-center text-2xl font-bold">
           Set New Password

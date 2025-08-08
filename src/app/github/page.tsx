@@ -3,9 +3,11 @@ import Link from "next/link";
 
 export default function GithubPage() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-[100svh] bg-background text-foreground">
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold mb-8 text-center">GitHub</h1>
+        <h1 className="text-3xl md:text-4xl font-bold mb-8 text-center">
+          GitHub
+        </h1>
         <div className="max-w-2xl mx-auto bg-card rounded-lg border p-6">
           <h2 className="text-2xl font-semibold mb-4">Open Source Project</h2>
           <p className="text-muted-foreground mb-6">

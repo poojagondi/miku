@@ -3,9 +3,9 @@ import Link from "next/link";
 
 export default function DiscordPage() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-[100svh] bg-background text-foreground">
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold mb-8 text-center">
+        <h1 className="text-3xl md:text-4xl font-bold mb-8 text-center">
           Discord Community
         </h1>
         <div className="max-w-2xl mx-auto bg-card rounded-lg border p-6">

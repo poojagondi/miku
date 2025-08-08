@@ -22,7 +22,7 @@ export default function LoaderDemo() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-100 to-blue-100 p-8">
+    <div className="min-h-[100svh] flex items-center justify-center bg-gradient-to-br from-pink-100 to-blue-100 p-6 sm:p-8">
       <div className="space-y-8 max-w-2xl w-full">
         <div className="text-center">
           <h1 className="text-4xl font-bold text-gray-800 mb-4">
