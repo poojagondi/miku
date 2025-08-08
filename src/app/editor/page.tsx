@@ -44,6 +44,8 @@ import { Button } from "@/components/ui/button";
 import { $createParagraphNode as lexicalCreateParagraphNode } from "lexical";
 import { $createTextNode as lexicalCreateTextNode } from "lexical";
 import { StickerNode } from "@/components/editor/nodes/sticker-node";
+import { TypingSoundsPlugin } from "@/components/editor/plugins/toolbar/typing-sounds-plugin";
+import { AlarmToolbarPlugin } from "@/components/editor/plugins/toolbar/alarm-toolbar-plugin";
 
 const editorConfig: InitialConfigType = {
   namespace: "Editor",
@@ -283,6 +285,8 @@ function Plugins() {
                 <AIChatPlugin />
                 <InsertStickerToolbarPlugin />
                 <ShimejiExtensionButton />
+                <TypingSoundsPlugin />
+                <AlarmToolbarPlugin />
                 <ThemeToggleButton />
               </div>
             </div>
