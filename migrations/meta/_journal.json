@@ -5,43 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1751978753747,
-      "tag": "0000_worthless_wendell_vaughn",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1753190006461,
-      "tag": "0001_grey_shocker",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1753272038555,
-      "tag": "0002_mixed_harrier",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1753272188777,
-      "tag": "0003_melted_hemingway",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1753433956671,
-      "tag": "0004_elite_jocasta",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1753784458910,
-      "tag": "0005_oval_roughhouse",
+      "when": 1754650082886,
+      "tag": "0000_moaning_famine",
       "breakpoints": true
     }
   ]
