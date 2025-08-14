@@ -4,12 +4,20 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { MessageSquare, X, Send, Minimize2, Maximize2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useSession } from "@/lib/auth-client";
 
 interface Message {
   id: string;
   content: string;
   role: "user" | "assistant";
   timestamp: Date;
+}
+
+interface StoredMessage {
+  id: string;
+  content: string;
+  role: "user" | "assistant";
+  timestamp: string; // Date stored as string in localStorage
 }
 
 export function AIChatPlugin() {
@@ -20,6 +28,47 @@ export function AIChatPlugin() {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Get current user session
+  const { data: session, isPending } = useSession();
+
+  // LocalStorage key for chat history (user-specific)
+  const CHAT_STORAGE_KEY = session?.user?.id
+    ? `miku-chat-history-${session.user.id}`
+    : "miku-chat-history-guest";
+
+  // Load chat history from localStorage on mount or when user changes
+  useEffect(() => {
+    // Don't load if session is still loading
+    if (isPending) return;
+
+    try {
+      const savedMessages = localStorage.getItem(CHAT_STORAGE_KEY);
+      if (savedMessages) {
+        const parsedMessages = JSON.parse(savedMessages).map(
+          (msg: StoredMessage) => ({
+            ...msg,
+            timestamp: new Date(msg.timestamp), // Convert string back to Date
+          })
+        );
+        setMessages(parsedMessages);
+      } else {
+        // Clear messages if no saved data for this user
+        setMessages([]);
+      }
+    } catch (error) {
+      console.error("Failed to load chat history from localStorage:", error);
+    }
+  }, [CHAT_STORAGE_KEY, isPending]);
+
+  // Save messages to localStorage whenever messages change
+  useEffect(() => {
+    try {
+      localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(messages));
+    } catch (error) {
+      console.error("Failed to save chat history to localStorage:", error);
+    }
+  }, [messages, CHAT_STORAGE_KEY]);
 
   // Auto-scroll to bottom when new messages are added
   useEffect(() => {
@@ -47,16 +96,31 @@ export function AIChatPlugin() {
     setInputValue("");
     setIsLoading(true);
 
-    // Simulate AI response (replace with actual AI API call)
     try {
-      // This is a mock response - you'll want to replace this with actual AI integration
-      await new Promise((resolve) =>
-        setTimeout(resolve, 1000 + Math.random() * 2000)
-      );
+      // Call the actual chatbot API
+      const response = await fetch("/api/chatbot", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: userMessage.content,
+          messages: messages.map((msg) => ({
+            role: msg.role,
+            content: msg.content,
+          })), // Include chat history
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to get AI response");
+      }
+
+      const data = await response.json();
 
       const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
-        content: getAIMockResponse(userMessage.content),
+        content: data.reply || "Sorry, I couldn't generate a response.",
         role: "assistant",
         timestamp: new Date(),
       };
@@ -86,6 +150,12 @@ export function AIChatPlugin() {
 
   const clearChat = () => {
     setMessages([]);
+    // Also clear from localStorage
+    try {
+      localStorage.removeItem(CHAT_STORAGE_KEY);
+    } catch (error) {
+      console.error("Failed to clear chat history from localStorage:", error);
+    }
   };
 
   return (
@@ -118,7 +188,7 @@ export function AIChatPlugin() {
           <div className="flex items-center justify-between p-3 border-b border-border bg-muted/50 rounded-t-lg">
             <div className="flex items-center gap-2">
               <MessageSquare className="size-4" />
-              <span className="font-medium text-sm">AI Assistant</span>
+              <span className="font-medium text-sm">Miku Assistant</span>
             </div>
             <div className="flex items-center gap-1">
               <Button
@@ -152,7 +222,7 @@ export function AIChatPlugin() {
                 {messages.length === 0 ? (
                   <div className="text-center text-muted-foreground text-sm py-8">
                     <MessageSquare className="size-8 mx-auto mb-2 opacity-50" />
-                    <p>Start a conversation with your AI assistant!</p>
+                    <p>Start a conversation with Miku!</p>
                     <p className="text-xs mt-1">
                       Ask questions about your notes or get writing help.
                     </p>
@@ -197,7 +267,7 @@ export function AIChatPlugin() {
                           <div className="size-2 bg-current rounded-full animate-bounce"></div>
                         </div>
                         <span className="ml-2 text-muted-foreground">
-                          AI is thinking...
+                          Miku is thinking...
                         </span>
                       </div>
                     </div>
@@ -215,7 +285,7 @@ export function AIChatPlugin() {
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     onKeyPress={handleKeyPress}
-                    placeholder="Ask AI anything..."
+                    placeholder="Ask Miku anything..."
                     className="flex-1 px-3 py-2 text-sm border border-border rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                     disabled={isLoading}
                   />
@@ -233,7 +303,7 @@ export function AIChatPlugin() {
                     onClick={clearChat}
                     className="text-xs text-muted-foreground hover:text-foreground mt-2 transition-colors"
                   >
-                    Clear conversation
+                    Clear conversation history
                   </button>
                 )}
               </div>
@@ -243,20 +313,4 @@ export function AIChatPlugin() {
       )}
     </>
   );
-}
-
-// Mock AI responses - replace with actual AI integration
-function getAIMockResponse(userMessage: string): string {
-  const responses = [
-    "That's an interesting point! Let me help you expand on that idea. Consider exploring the different perspectives on this topic.",
-    "I can help you organize these thoughts better. Would you like me to suggest a structure for your notes?",
-    "Great question! Here are some key points you might want to include in your notes about this topic.",
-    "I notice you're working on this concept. Here's another angle you might find useful to consider.",
-    "That's a solid foundation. You could strengthen this by adding some specific examples or evidence.",
-    "I can help you break this down into smaller, more manageable sections. Would that be helpful?",
-    "This is a complex topic. Let me suggest a few ways to approach it systematically.",
-    "I see what you're getting at. Here's how you might connect this to your other notes.",
-  ];
-
-  return responses[Math.floor(Math.random() * responses.length)];
 }

@@ -28,7 +28,10 @@ export default function ChatBot() {
 
     try {
       setSending(true);
-      const body: Record<string, unknown> = { message: trimmed };
+      const body: Record<string, unknown> = {
+        message: trimmed,
+        messages: messages, // Include the entire chat history
+      };
       if (selectedNoteId !== undefined) body.noteId = selectedNoteId;
 
       console.log("Sending to chatbot:", body); // Debug log
@@ -110,15 +113,78 @@ export default function ChatBot() {
         style={{
           display: "flex",
           flexDirection: "column",
-          gap: 8,
-          minHeight: 300,
+          gap: 12,
+          minHeight: 400,
+          maxHeight: 600,
+          overflowY: "auto",
+          padding: 16,
+          border: "1px solid #ddd",
+          borderRadius: 8,
+          backgroundColor: "#fafafa",
         }}
       >
-        {messages.map((msg, idx) => (
-          <div key={idx} className={msg.role}>
-            {msg.content}
+        {messages.length === 0 ? (
+          <div
+            style={{ textAlign: "center", color: "#666", fontStyle: "italic" }}
+          >
+            Start a conversation with Miku! Ask about your notes or anything
+            else.
           </div>
-        ))}
+        ) : (
+          messages.map((msg, idx) => (
+            <div
+              key={idx}
+              style={{
+                padding: 12,
+                borderRadius: 8,
+                backgroundColor: msg.role === "user" ? "#e3f2fd" : "#f1f8e9",
+                border: `1px solid ${msg.role === "user" ? "#bbdefb" : "#c8e6c9"}`,
+                alignSelf: msg.role === "user" ? "flex-end" : "flex-start",
+                maxWidth: "80%",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: 12,
+                  fontWeight: "bold",
+                  marginBottom: 4,
+                  color: "#666",
+                }}
+              >
+                {msg.role === "user" ? "You" : "Miku"}
+              </div>
+              <div style={{ whiteSpace: "pre-wrap", color: "#333" }}>
+                {msg.content}
+              </div>
+            </div>
+          ))
+        )}
+        {sending && (
+          <div
+            style={{
+              padding: 12,
+              borderRadius: 8,
+              backgroundColor: "#f1f8e9",
+              border: "1px solid #c8e6c9",
+              alignSelf: "flex-start",
+              maxWidth: "80%",
+              fontStyle: "italic",
+              color: "#666",
+            }}
+          >
+            <div
+              style={{
+                fontSize: 12,
+                fontWeight: "bold",
+                marginBottom: 4,
+                color: "#666",
+              }}
+            >
+              Miku
+            </div>
+            <div style={{ color: "#666" }}>Thinking...</div>
+          </div>
+        )}
       </div>
       <form
         onSubmit={handleSubmit}

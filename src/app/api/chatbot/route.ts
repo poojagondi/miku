@@ -1,110 +1,92 @@
 import { NextRequest, NextResponse } from "next/server";
+import OpenAI from "openai";
 import { auth } from "@/lib/auth";
-import { getAllNotes, getNoteById } from "@/services/notes-service";
+import { getAllNotes } from "@/services/notes-service";
 
-// Handle POST /api/chatbot (App Router)
-export async function POST(req: NextRequest) {
+const openai = new OpenAI({
+  baseURL: "https://openrouter.ai/api/v1",
+  apiKey: process.env.OPENROUTER_API_KEY,
+  defaultHeaders: {
+    "HTTP-Referer": process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
+    "X-Title": "Miku Note",
+  },
+});
+
+export async function POST(request: NextRequest) {
   try {
-    console.log("=== CHATBOT API CALLED ===");
-
-    const body = await req.json();
-    const message: unknown = body?.message;
-    const noteIdRaw: unknown = body?.noteId;
-
-    console.log("Request body:", { message, noteIdRaw });
-
-    if (typeof message !== "string" || !message.trim()) {
-      console.log("Invalid message");
-      return NextResponse.json({ error: "Invalid message" }, { status: 400 });
-    }
-
-    const session = await auth.api.getSession(req);
-    console.log("Session:", session ? "authenticated" : "not authenticated");
-
+    // Check authentication
+    const session = await auth.api.getSession(request);
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Coerce noteId (may arrive as string or number)
-    let noteId: number | undefined;
-    if (typeof noteIdRaw === "number" && Number.isFinite(noteIdRaw)) {
-      noteId = noteIdRaw;
-    } else if (typeof noteIdRaw === "string") {
-      const parsed = parseInt(noteIdRaw, 10);
-      if (!Number.isNaN(parsed)) noteId = parsed;
-    }
+    // Parse request body
+    const body = await request.json();
+    const { message, messages = [], noteId } = body;
 
-    // Build notes context: specific note if provided and owned by user; otherwise recent notes
+    // Get user's notes
+    const allNotes = await getAllNotes(session.user.id);
+
+    // Filter notes if specific noteId is provided
+    const relevantNotes = noteId
+      ? allNotes.filter((note) => note.id === noteId)
+      : allNotes;
+
+    // Prepare context from notes
     let notesContext = "";
-    if (noteId !== undefined) {
-      const note = await getNoteById(noteId);
-      console.log("Selected note:", note); // Debug
-      if (!note || note.createdBy !== session.user.id) {
-        return NextResponse.json({ error: "Note not found" }, { status: 404 });
-      }
-      notesContext = (note.content ?? "").toString().trim();
-    } else {
-      const userNotes = await getAllNotes(session.user.id);
-      console.log("All user notes:", userNotes.length, "notes found"); // Debug
-      console.log(
-        "Sample note contents:",
-        userNotes.slice(0, 2).map((n) => ({
-          id: n.id,
-          content: n.content?.toString().slice(0, 100),
-        }))
-      ); // Debug
-      const recentNotes = userNotes.slice(0, 10); // limit context
-      notesContext = recentNotes
-        .map((n) => `- ${n.content?.toString().trim() || ""}`)
-        .filter((s) => s.length > 2)
-        .join("\n");
+    if (relevantNotes.length > 0) {
+      notesContext = relevantNotes
+        .map(
+          (note) =>
+            `Note #${note.id} (created: ${note.createdAt}):\n${note.content}`
+        )
+        .join("\n\n---\n\n");
     }
 
-    console.log("Final notes context length:", notesContext.length); // Debug
-    console.log("Notes context preview:", notesContext.slice(0, 200)); // Debug
+    // Prepare system message with context
+    const systemMessage = {
+      role: "system" as const,
+      content: `You are Miku, a helpful AI assistant integrated into a note-taking app. You have access to the user's notes and can help them with questions about their content, summarization, analysis, or general assistance.
 
-    console.log("Notes context:", notesContext); // Debug log
+${notesContext ? `Here are the user's notes for context:\n\n${notesContext}` : "The user doesn't have any notes yet."}
 
-    // For now, return a simple analysis of the notes without using AI APIs
-    // since both OpenAI and Gemini have hit quota limits
-    let reply = "";
+Please be helpful, concise, and reference specific notes when relevant. If asked about notes that don't exist, politely let them know.
 
-    if (!notesContext.trim()) {
-      reply =
-        "You don't have any notes yet. Create some notes first, then I can help you analyze them!";
-    } else {
-      const noteLines = notesContext.split("\n").filter((line) => line.trim());
-      const wordCount = notesContext.split(/\s+/).length;
+IMPORTANT: Do not use markdown formatting like **bold** or *italic* in your responses. Use plain text only since the interface doesn't render markdown. Instead of **text** just write text normally.`,
+    };
 
-      reply = `Based on your notes, here's what I found:
+    // Prepare messages array for OpenAI
+    const openaiMessages = [
+      systemMessage,
+      ...messages, // Include chat history
+    ];
 
-📝 **Summary of your ${noteLines.length} notes:**
-
-${notesContext}
-
-📊 **Quick stats:**
-- Total words: ${wordCount}
-- Number of note entries: ${noteLines.length}
-
-💡 **What I can see:**
-Your notes contain a mix of content including what appears to be a story about someone who couldn't move/froze, some test content, and mentions of school. 
-
-*(Note: AI analysis is temporarily unavailable due to API limits - this is a direct view of your notes content)*`;
+    // Add the current message if provided
+    if (message) {
+      openaiMessages.push({
+        role: "user" as const,
+        content: message,
+      });
     }
 
-    console.log("Fallback response generated:", reply.slice(0, 100) + "...");
+    // Call OpenAI API
+    const completion = await openai.chat.completions.create({
+      model: "openai/gpt-5-nano", // Changed to a more reliable model
+      messages: openaiMessages,
+      max_tokens: 1000,
+      temperature: 0.7,
+    });
+
+    const reply =
+      completion.choices[0]?.message?.content ||
+      "Sorry, I couldn't generate a response.";
 
     return NextResponse.json({ reply });
   } catch (error) {
-    console.error("Chatbot route error:", error);
+    console.error("Chatbot API error:", error);
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }
-}
-
-// Optional: simple health check
-export async function GET() {
-  return NextResponse.json({ ok: true, message: "Chatbot endpoint is live" });
 }
